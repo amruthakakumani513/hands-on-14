@@ -1,74 +1,90 @@
-class Vertex:
-    def __init__(self, data):
-        self.data = data
-        self.color = 0
-        self.dt = 0
-        self.ft = 0
-        self.predecessor = No
-
-class DFSGraph:
-    def __init__(self, vertices):
-        self.vertices = vertices
-        self.adj = {}  
-        self.time = 0  
-
-    def add_edge(self, u, v):
-        if u not in self.adj:
-            self.adj[u] = [v]  
-        else:
-            self.adj[u].append(v)  
-
-    def add_vertex(self, vertex):
-        self.adj[vertex] = []  
-
-  
-    def DFS(self):
-        for v in self.adj.keys():
-            v.color = 0
-            v.predecessor = None
-        self.time = 0  # Reset the time counter
-        for v in self.adj.keys():  
-            if v.color == 0:  
-                self.DFS_Visit(v)
-
-    def DFS_Visit(self, vertex):
-        self.time += 1  # Increment the time counter
-        vertex.dt = self.time  
-        vertex.color = 1
-        for v in self.adj[vertex]: 
-            if v.color == 0:  
-                v.predecessor = vertex 
-                self.DFS_Visit(v)  
-        vertex.color = 2  
-        self.time += 1  
-        vertex.ft = self.time 
-
-    def __str__(self):
-        print("\n ---Adjacency List ---")
-        for v in self.adj.keys():
-            print(v.data, end=": ")
-            for j in self.adj[v]:
-                print(j.data, end=" ")
-            print("\b")
-        return "---End of Adjacency List ---\n"
-
-
-if __name__ == "__main__":
-    # Create a graph with 6 vertices
-    graph = DFSGraph(6)
-    # Create vertices
-    u, v, w, x, y, z = Vertex('u'), Vertex('v'), Vertex('w'), Vertex('x'), Vertex('y'), Vertex('z')
-    # Add edges between vertices
-    graph.add_edge(u, v)
-    graph.add_edge(u, x)
-    graph.add_edge(x, v)
-    graph.add_edge(v, y)
-    graph.add_edge(y, x)
-    graph.add_edge(w, y)
-    graph.add_edge(w, z)
-    graph.add_edge(z, z)
-
-    graph.DFS()
-    
-    for i in graph.adj.keys():
-        print(f"{i.data} ({i.dt}/{i.ft}),", end=" ")
+import java.util.*;
+class Vertex {
+    String data;
+    int color;
+    int dt;
+    int ft;
+    Vertex predecessor;
+ Vertex(String data) {
+        this.data = data;
+        color = 0;
+        dt = 0;
+        ft = 0;
+        predecessor = null;
+    }
+}
+class DFSGraph {
+    List<Vertex> vertices;
+    Map<Vertex, List<Vertex>> adj;
+    int time;
+   DFSGraph(List<Vertex> vertices) {
+        this.vertices = vertices;
+        adj = new HashMap<>();
+        time = 0;
+    }
+    void addEdge(Vertex u, Vertex v) {
+        adj.computeIfAbsent(u, k -> new ArrayList<>()).add(v);
+    }
+    void addVertex(Vertex vertex) {
+        adj.put(vertex, new ArrayList<>());
+    }
+    void DFS() {
+        for (Vertex v : adj.keySet()) {
+            v.color = 0;
+            v.predecessor = null;
+        }
+        time = 0;
+        for (Vertex v : adj.keySet()) {
+            if (v.color == 0) {
+                DFSVisit(v);
+            }
+        }
+    }
+    void DFSVisit(Vertex vertex) {
+        time++;
+        vertex.dt = time;
+        vertex.color = 1;
+        for (Vertex v : adj.getOrDefault(vertex, new ArrayList<>())) {
+            if (v.color == 0) {
+                v.predecessor = vertex;
+                DFSVisit(v);
+            }
+        }
+        vertex.color = 2;
+        time++;
+        vertex.ft = time;
+    }
+    void printGraph() {
+        System.out.println("\n ---Adjacency List ---");
+        for (Vertex v : adj.keySet()) {
+            System.out.print(v.data + ": ");
+            for (Vertex j : adj.getOrDefault(v, new ArrayList<>())) {
+                System.out.print(j.data + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("---End of Adjacency List ---");
+    }
+    public static void main(String[] args) {
+        List<Vertex> vertices = new ArrayList<>();
+        vertices.add(new Vertex("u"));
+        vertices.add(new Vertex("v"));
+        vertices.add(new Vertex("w"));
+        vertices.add(new Vertex("x"));
+        vertices.add(new Vertex("y"));
+        vertices.add(new Vertex("z"));
+        DFSGraph graph = new DFSGraph(vertices);
+        graph.addEdge(vertices.get(0), vertices.get(1));
+        graph.addEdge(vertices.get(0), vertices.get(3));
+        graph.addEdge(vertices.get(3), vertices.get(1));
+        graph.addEdge(vertices.get(1), vertices.get(4));
+        graph.addEdge(vertices.get(4), vertices.get(3));
+        graph.addEdge(vertices.get(2), vertices.get(4));
+        graph.addEdge(vertices.get(2), vertices.get(5));
+        graph.addEdge(vertices.get(5), vertices.get(5));
+        graph.DFS();
+        for (Vertex v : graph.adj.keySet()) {
+            System.out.print(v.data + " (" + v.dt + "/" + v.ft + "), ");
+        }
+    }
+}
