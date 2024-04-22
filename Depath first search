@@ -1,0 +1,74 @@
+class Vertex:
+    def __init__(self, data):
+        self.data = data
+        self.color = 0
+        self.dt = 0
+        self.ft = 0
+        self.predecessor = No
+
+class DFSGraph:
+    def __init__(self, vertices):
+        self.vertices = vertices
+        self.adj = {}  
+        self.time = 0  
+
+    def add_edge(self, u, v):
+        if u not in self.adj:
+            self.adj[u] = [v]  
+        else:
+            self.adj[u].append(v)  
+
+    def add_vertex(self, vertex):
+        self.adj[vertex] = []  
+
+  
+    def DFS(self):
+        for v in self.adj.keys():
+            v.color = 0
+            v.predecessor = None
+        self.time = 0  # Reset the time counter
+        for v in self.adj.keys():  
+            if v.color == 0:  
+                self.DFS_Visit(v)
+
+    def DFS_Visit(self, vertex):
+        self.time += 1  # Increment the time counter
+        vertex.dt = self.time  
+        vertex.color = 1
+        for v in self.adj[vertex]: 
+            if v.color == 0:  
+                v.predecessor = vertex 
+                self.DFS_Visit(v)  
+        vertex.color = 2  
+        self.time += 1  
+        vertex.ft = self.time 
+
+    def __str__(self):
+        print("\n ---Adjacency List ---")
+        for v in self.adj.keys():
+            print(v.data, end=": ")
+            for j in self.adj[v]:
+                print(j.data, end=" ")
+            print("\b")
+        return "---End of Adjacency List ---\n"
+
+
+if __name__ == "__main__":
+    # Create a graph with 6 vertices
+    graph = DFSGraph(6)
+    # Create vertices
+    u, v, w, x, y, z = Vertex('u'), Vertex('v'), Vertex('w'), Vertex('x'), Vertex('y'), Vertex('z')
+    # Add edges between vertices
+    graph.add_edge(u, v)
+    graph.add_edge(u, x)
+    graph.add_edge(x, v)
+    graph.add_edge(v, y)
+    graph.add_edge(y, x)
+    graph.add_edge(w, y)
+    graph.add_edge(w, z)
+    graph.add_edge(z, z)
+
+    graph.DFS()
+    
+    for i in graph.adj.keys():
+        print(f"{i.data} ({i.dt}/{i.ft}),", end=" ")
