@@ -1,0 +1,96 @@
+import java.util.*;
+
+class KruskalAlgorithmGraph {
+    List<int[]> graph;
+
+    KruskalAlgorithmGraph() {
+        this.graph = new ArrayList<>();
+    }
+
+    void addEdgeToGraph(char u, char v, int w) {
+        graph.add(new int[]{u, v, w});
+    }
+
+    int findParentNode(Map<Character, Character> parent, char i) {
+        if (parent.get(i) == i) {
+            return i;
+        }
+        return findParentNode(parent, parent.get(i));
+    }
+
+    void unionNodes(Map<Character, Character> parent, Map<Character, Integer> rank, char x, char y) {
+        char xRoot = (char) findParentNode(parent, x);
+        char yRoot = (char) findParentNode(parent, y);
+
+        if (rank.get(xRoot) < rank.get(yRoot)) {
+            parent.put(xRoot, yRoot);
+        } else if (rank.get(xRoot) > rank.get(yRoot)) {
+            parent.put(yRoot, xRoot);
+        } else {
+            parent.put(yRoot, xRoot);
+            rank.put(xRoot, rank.get(xRoot) + 1);
+        }
+    }
+
+    List<int[]> kruskalMSTImplementation() {
+        List<int[]> result = new ArrayList<>();
+        int i = 0, e = 0;
+        Collections.sort(graph, Comparator.comparingInt(o -> o[2]));
+
+        Map<Character, Character> parent = new HashMap<>();
+        Map<Character, Integer> rank = new HashMap<>();
+
+        for (int[] edge : graph) {
+            char u = (char) edge[0];
+            char v = (char) edge[1];
+            if (!parent.containsKey(u)) {
+                parent.put(u, u);
+                rank.put(u, 0);
+            }
+            if (!parent.containsKey(v)) {
+                parent.put(v, v);
+                rank.put(v, 0);
+            }
+        }
+
+        while (e < parent.size() - 1) {
+            char u = (char) graph.get(i)[0];
+            char v = (char) graph.get(i)[1];
+            int w = graph.get(i)[2];
+            i++;
+
+            char x = (char) findParentNode(parent, u);
+            char y = (char) findParentNode(parent, v);
+
+            if (x != y) {
+                e++;
+                result.add(new int[]{u, v, w});
+                unionNodes(parent, rank, x, y);
+            }
+        }
+
+        return result;
+    }
+
+    // Example usage
+    public static void main(String[] args) {
+        KruskalAlgorithmGraph g = new KruskalAlgorithmGraph();
+        g.addEdgeToGraph('C', 'E', 6);
+        g.addEdgeToGraph('C', 'B', 4);
+        g.addEdgeToGraph('A', 'D', 2);
+        g.addEdgeToGraph('B', 'F', 30);
+        g.addEdgeToGraph('C', 'D', 16);
+        g.addEdgeToGraph('D', 'A', 4);
+        g.addEdgeToGraph('F', 'B', 32);
+        g.addEdgeToGraph('F', 'G', 10);
+        g.addEdgeToGraph('A', 'F', 9);
+        g.addEdgeToGraph('G', 'B', 8);
+        g.addEdgeToGraph('B', 'D', 18);
+
+        System.out.println("Edges in the minimum spanning tree using Kruskal Algorithm:");
+        List<int[]> result = g.kruskalMSTImplementation();
+        for (int[] edge : result) {
+            System.out.println(Arrays.toString(edge));
+        }
+    }
+}
